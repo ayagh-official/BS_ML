@@ -1,11 +1,20 @@
 from typing import Union
-
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import numpy as np
 from tensorflow.keras.models import load_model
 
 app = FastAPI()
+
+# Allow any origin
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 model_path = "./trainedModel2.h5"
 binary_model = load_model(model_path)
@@ -22,7 +31,10 @@ class Item(BaseModel):
     bmi: float
     smoking_status: str
     
-
+@app.get("/ping")
+async def ping():
+    return "Hello, I am alive"
+    
 @app.post("/predict")
 def predict(item: Item):
     # Map categorical variables to numerical values
@@ -57,3 +69,6 @@ def predict(item: Item):
     }
 
     return {"prediction": predicted_class, "message": output_messages[predicted_class]}
+    
+if __name__ == "__main__":
+    uvicorn.run(app, host='0.0.0.0', port=8000)
