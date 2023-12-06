@@ -60,15 +60,9 @@ def predict(item: Item):
 
     # The output is a probability, you can convert it to a class (0 or 1) based on a threshold
     threshold = 0.5
-    predicted_class = 1 if prediction[0, 0] > threshold else 0
+    prediction_message = "Positive" if prediction[0, 0] > threshold else "Negative"
 
-    # Define output messages based on the predicted class
-    output_messages = {
-        0: "No Brain Stroke predicted for the patient.",
-        1: "Brain Stroke may develop for the patient!"
-    }
-
-    return {"prediction": predicted_class, "message": output_messages[predicted_class]}
+    return {"prediction": prediction_message}
     
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)
